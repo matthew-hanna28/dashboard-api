@@ -1,4 +1,4 @@
-# src/routes.py
+
 from flask import Blueprint, jsonify, request
 from .logic import generate_palette  # Import logic
 from .utils import get_css_colors    # Import helper

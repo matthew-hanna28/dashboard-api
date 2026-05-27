@@ -1,10 +1,9 @@
-# app.py
 from flask import Flask
 from flask_caching import Cache
 from src.routes import api_bp
 
 app = Flask(__name__)
-# Initialize cache here
+# Initialize cache
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 
 # Register the blueprint
