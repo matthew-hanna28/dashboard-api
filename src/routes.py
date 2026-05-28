@@ -1,18 +1,28 @@
-
 from flask import Blueprint, jsonify, request
-from .logic import generate_palette  # Import logic
-from .utils import get_css_colors    # Import helper
+from flasgger import swag_from
+from .logic import generate_palette
 
 api_bp = Blueprint('api', __name__)
 
 @api_bp.route('/colors', methods=['GET'])
-def get_color_palette():
-    base_hex = request.args.get('base', '3498db')
-    mode = request.args.get('mode', 'analogous')
+@swag_from({
+    'parameters': [
+        {'name': 'base', 'in': 'query', 'type': 'string', 'default': '3498db'},
+        {'name': 'mode', 'in': 'query', 'type': 'string', 'default': 'analogous', 
+         'enum': ['analogous', 'complementary', 'triadic', 'monochromatic']}
+    ],
+    'responses': {
+        200: {'description': 'A list of colors in the palette'},
+        400: {'description': 'Invalid input'}
+    }
+})
+def get_colors():
+    base = request.args.get('base', '3498db').lstrip('#')
+    mode = request.args.get('mode', 'analogous').lower()
     
-    try:
-        # Generate the palette using the logic function
-        palette = generate_palette(base_hex, mode)
-        return jsonify({"status": "success", "palette": palette})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
+    # Simple, clean validation
+    if len(base) != 6:
+        return jsonify({"error": "Invalid hex format"}), 400
+        
+    palette = generate_palette(base, mode)
+    return jsonify({"status": "success", "palette": palette})
