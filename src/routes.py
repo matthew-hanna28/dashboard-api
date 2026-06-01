@@ -26,3 +26,15 @@ def get_colors():
         
     palette = generate_palette(base, mode)
     return jsonify({"status": "success", "palette": palette})
+
+from flask import jsonify
+
+# Add this to your api_bp
+@api_bp.errorhandler(Exception)
+def handle_exception(e):
+    # This catches EVERYTHING unexpected
+    return jsonify({
+        "status": "error",
+        "message": "An internal error occurred.",
+        "detail": str(e)
+    }), 500

@@ -3,7 +3,10 @@ from flasgger import Swagger
 from src.routes import api_bp
 
 app = Flask(__name__)
-Swagger(app)  # This enables the /apidocs route!
+
+app.config.from_object('config.Config')
+
+Swagger(app)
 
 app.register_blueprint(api_bp, url_prefix='/api')
 
