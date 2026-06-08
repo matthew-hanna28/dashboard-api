@@ -1,6 +1,14 @@
 from flask import Blueprint, jsonify, request
 from flasgger import swag_from
 from .logic import generate_palette
+from flask import make_response
+
+@api_bp.route('/api/download')
+def download_palette():
+    # ... generate palette ...
+    response = make_response(jsonify(palette))
+    response.headers["Content-Disposition"] = "attachment; filename=palette.json"
+    return response
 
 api_bp = Blueprint('api', __name__)
 
@@ -38,3 +46,12 @@ def handle_exception(e):
         "message": "An internal error occurred.",
         "detail": str(e)
     }), 500
+
+@api_bp.route('/colors/css', methods=['GET'])
+def get_css_export():
+    # Generate palette...
+    css_string = ":root {\n"
+    for item in palette:
+        css_string += f"  --color-{item['role'].replace(' ', '-').lower()}: {item['hex']};\n"
+    css_string += "}"
+    return css_string, 200, {'Content-Type': 'text/css'}
